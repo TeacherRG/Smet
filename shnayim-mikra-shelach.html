@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שניים מקרא — פרשת שלח</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Noto+Serif+Hebrew:wght@300;400;600&display=swap');
+
+  :root {
+    --parchment: #F5EED8;
+    --parchment-dark: #EDE0C0;
+    --ink: #1A1209;
+    --ink-mid: #3D2B0E;
+    --gold: #B8862C;
+    --gold-light: #D4A84B;
+    --crimson: #8B1A1A;
+    --shadow: rgba(26,18,9,0.15);
+    --aliya-colors: #8B1A1A, #1A5C8B, #1A7A3A, #6B2D8B, #8B5E1A, #1A6B6B, #4A1A8B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #2A1F0E;
+    background-image: radial-gradient(ellipse at top, #3A2A12 0%, #1A1209 100%);
+    min-height: 100vh;
+    font-family: 'Noto Serif Hebrew', 'Frank Ruhl Libre', serif;
+    color: var(--ink);
+  }
+
+  /* HEADER */
+  .site-header {
+    background: linear-gradient(135deg, #1A1209 0%, #2E1F0A 50%, #1A1209 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 16px 20px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  .site-header h1 {
+    color: var(--gold-light);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  }
+
+  .site-header .subtitle {
+    color: #C9A96E;
+    font-size: 0.85rem;
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  /* ALIYA NAV */
+  .aliya-nav {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    background: #1A1209;
+    border-bottom: 1px solid #3A2A12;
+  }
+
+  .aliya-btn {
+    background: transparent;
+    border: 1px solid #5A4020;
+    color: #C9A96E;
+    padding: 5px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .aliya-btn:hover {
+    background: #2E1F0A;
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+
+  .aliya-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1A1209;
+    font-weight: 600;
+  }
+
+  /* AUDIO PLAYER */
+  .player-bar {
+    background: linear-gradient(180deg, #221608 0%, #1A1209 100%);
+    border-bottom: 1px solid #3A2A12;
+    padding: 10px 16px;
+    position: sticky;
+    top: 80px;
+    z-index: 90;
+  }
+
+  .player-aliya-label {
+    color: var(--gold-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .play-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .play-btn:hover { background: var(--gold-light); transform: scale(1.05); }
+  .play-btn:active { transform: scale(0.95); }
+
+  .play-btn svg { fill: #1A1209; }
+
+  .progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: #3A2A12;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+    pointer-events: none;
+  }
+
+  .time-display {
+    display: flex;
+    justify-content: space-between;
+    color: #8A7050;
+    font-size: 0.72rem;
+    font-family: monospace;
+    direction: ltr;
+  }
+
+  .speed-btns {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .speed-btn {
+    background: transparent;
+    border: 1px solid #5A4020;
+    color: #8A7050;
+    padding: 3px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-family: monospace;
+    direction: ltr;
+    transition: all 0.2s;
+  }
+
+  .speed-btn.active, .speed-btn:hover {
+    background: #3A2A12;
+    border-color: var(--gold);
+    color: var(--gold-light);
+  }
+
+  .audio-status {
+    text-align: center;
+    color: #6A5030;
+    font-size: 0.78rem;
+    margin-top: 4px;
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  .aliya-section {
+    display: none;
+    background: var(--parchment);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px var(--shadow);
+    border: 1px solid var(--parchment-dark);
+    position: relative;
+  }
+
+  .aliya-section.active { display: block; }
+
+  .aliya-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--parchment-dark);
+  }
+
+  .aliya-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--crimson);
+    color: #F5EED8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .aliya-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink-mid);
+  }
+
+  /* PASUK */
+  .pasuk {
+    margin-bottom: 18px;
+    padding: 10px 12px;
+    border-right: 3px solid transparent;
+    border-radius: 3px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .pasuk:hover {
+    background: rgba(184,134,44,0.06);
+    border-right-color: var(--gold-light);
+  }
+
+  .pasuk-num {
+    display: inline-block;
+    width: 28px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--crimson);
+    font-weight: 600;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+
+  .mikra-line {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .mikra-line-2 {
+    font-size: 1.0rem;
+    line-height: 1.8;
+    color: #3A2B10;
+    margin-bottom: 4px;
+    padding-right: 12px;
+  }
+
+  .targum-line {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #5C4420;
+    padding-right: 12px;
+    font-style: italic;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--parchment-dark);
+    margin: 14px 0;
+  }
+
+  /* Badges for aliyot colors */
+  .aliya-section:nth-child(1) .aliya-badge { background: #8B1A1A; }
+  .aliya-section:nth-child(2) .aliya-badge { background: #1A5C8B; }
+  .aliya-section:nth-child(3) .aliya-badge { background: #1A7A3A; }
+  .aliya-section:nth-child(4) .aliya-badge { background: #6B2D8B; }
+  .aliya-section:nth-child(5) .aliya-badge { background: #8B5E1A; }
+  .aliya-section:nth-child(6) .aliya-badge { background: #1A6B6B; }
+  .aliya-section:nth-child(7) .aliya-badge { background: #4A1A8B; }
+
+  /* Saved position toast */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: #2E1F0A;
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    transition: transform 0.3s;
+    z-index: 200;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Auto-play badge */
+  .auto-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(26,122,58,0.15);
+    border: 1px solid rgba(26,122,58,0.4);
+    color: #1A7A3A;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .mikra-line { font-size: 1.05rem; }
+    .speed-btns { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <h1>שניים מקרא ואחד תרגום</h1>
+  <div class="subtitle">פרשת שלח — עם הקראה בקול</div>
+</div>
+
+<div class="aliya-nav">
+  <button class="aliya-btn active" onclick="selectAliya(1)">ראשון</button>
+  <button class="aliya-btn" onclick="selectAliya(2)">שני</button>
+  <button class="aliya-btn" onclick="selectAliya(3)">שלישי</button>
+  <button class="aliya-btn" onclick="selectAliya(4)">רביעי</button>
+  <button class="aliya-btn" onclick="selectAliya(5)">חמישי</button>
+  <button class="aliya-btn" onclick="selectAliya(6)">ששי</button>
+  <button class="aliya-btn" onclick="selectAliya(7)">שביעי</button>
+</div>
+
+<div class="player-bar">
+  <div class="player-aliya-label" id="playerLabel">ראשון — לחץ להפעלה</div>
+  <div class="player-controls">
+    <button class="play-btn" id="playBtn" onclick="togglePlay()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div class="progress-wrap">
+      <div class="progress-track" id="progressTrack" onclick="seekAudio(event)">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="time-display">
+        <span id="currentTime">0:00</span>
+        <span id="totalTime">--:--</span>
+      </div>
+    </div>
+    <div class="speed-btns">
+      <button class="speed-btn" onclick="setSpeed(0.75)">0.75×</button>
+      <button class="speed-btn active" onclick="setSpeed(1)">1×</button>
+      <button class="speed-btn" onclick="setSpeed(1.25)">1.25×</button>
+      <button class="speed-btn" onclick="setSpeed(1.5)">1.5×</button>
+    </div>
+  </div>
+  <div class="audio-status" id="audioStatus">בחר עלייה ולחץ על ▶ להתחיל</div>
+</div>
+
+<div class="content">
+
+<!-- RISHON -->
+<div class="aliya-section active" id="aliya-1">
+  <div class="aliya-header">
+    <div class="aliya-badge">א</div>
+    <div class="aliya-title">ראשון — במדבר י״ג א׳–כ׳</div>
+  </div>
+
+  <div class="pasuk">
+    <span class="pasuk-num">א</span>
+    <div class="mikra-line">וַיְדַבֵּ֥ר יְהוָ֖ה אֶל־מֹשֶׁ֥ה לֵּאמֹֽר׃</div>
+    <div class="mikra-line-2">וַיְדַבֵּ֥ר יְהוָ֖ה אֶל־מֹשֶׁ֥ה לֵּאמֹֽר׃</div>
+    <div class="targum-line">וּמַלִּיל יְיָ עִם משֶׁה לְמֵימָר:</div>
+  </div><div class="divider"></div>
+
+  <div class="pasuk">
+    <span class="pasuk-num">ב</span>
+    <div class="mikra-line">שְׁלַח־לְךָ֣ אֲנָשִׁ֗ים וְיָתֻ֙רוּ֙ אֶת־אֶ֣רֶץ כְּנַ֔עַן אֲשֶׁר־אֲנִ֥י נֹתֵ֖ן לִבְנֵ֣י יִשְׂרָאֵ֑ל אִ֣ישׁ אֶחָד֩ אִ֨ישׁ אֶחָ֜ד לְמַטֵּ֤ה אֲבֹתָיו֙ תִּשְׁלָ֔חוּ כֹּ֖ל נָשִׂ֥יא בָהֶֽם׃</div>
+    <div class="mikra-line-2">שְׁלַח־לְךָ֣ אֲנָשִׁ֗ים וְיָתֻ֙רוּ֙ אֶת־אֶ֣רֶץ כְּנַ֔עַן אֲשֶׁר־אֲנִ֥י נֹתֵ֖ן לִבְנֵ֣י יִשְׂרָאֵ֑ל אִ֣ישׁ אֶחָד֩ אִ֨ישׁ אֶחָ֜ד לְמַטֵּ֤ה אֲבֹתָיו֙ תִּשְׁלָ֔חוּ כֹּ֖ל נָשִׂ֥יא בָהֶֽם׃</div>
+    <div class="targum-line">שְׁלַח לָךְ גֻּבְרִין וִיאַלְּלוּן יָת אַרְעָא דִכְנַעַן דִּי אֲנָא יָהֵב לִבְנֵי יִשְׂרָאֵל גַּבְרָא חַד גַּבְרָא חַד לְשִׁבְטָא דַאֲבָהָתוֹהִי תְּשַׁלְּחוּן כֹּל רַבָּא דִבְהוֹן:</div>
+  </div><div class="divider"></div>
+
+  <div class="pasuk">
+    <span class="pasuk-num">ג</span>
+    <div class="mikra-line">וַיִּשְׁלַ֨ח אֹתָ֥ם מֹשֶׁ֛ה מִמִּדְבַּ֥ר פָּארָ֖ן עַל־פִּ֣י יְהוָ֑ה כֻּלָּ֣ם אֲנָשִׁ֔ים רָאשֵׁ֥י בְנֵֽי־יִשְׂרָאֵ֖ל הֵֽמָּה׃</div>
+    <div class="mikra-line-2">וַיִּשְׁלַ֨ח אֹתָ֥ם מֹשֶׁ֛ה מִמִּדְבַּ֥ר פָּארָ֖ן עַל־פִּ֣י יְהוָ֑ה כֻּלָּ֣ם אֲנָשִׁ֔ים רָאשֵׁ֥י בְנֵֽי־יִשְׂרָאֵ֖ל הֵֽמָּה׃</div>
+    <div class="targum-line">וּשְׁלַח יָתְהוֹן משֶׁה מִמַּדְבְּרָא דְפָארָן עַל מֵימְרָא דַיְיָ כֻּלְּהוֹן גֻּבְרִין רֵישֵׁי בְנֵי יִשְׂרָאֵל אִנּוּן:</div>
+  </div><div class="divider"></div>
+
+  <div class="pasuk">
+    <span class="pasuk-num">ד–ט״ו</span>
+    <div class="mikra-line">וְאֵ֖לֶּה שְׁמוֹתָ֑ם לְמַטֵּ֣ה רְאוּבֵ֔ן שַׁמּ֖וּעַ בֶּן־זַכּֽוּר׃ לְמַטֵּ֣ה שִׁמְע֔וֹן שָׁפָ֖ט בֶּן־חוֹרִֽי׃ לְמַטֵּ֣ה יְהוּדָ֔ה כָּלֵ֖ב בֶּן־יְפֻנֶּֽה׃ לְמַטֵּ֣ה יִשָּׂשכָ֔ר יִגְאָ֖ל בֶּן־יוֹסֵֽף׃ לְמַטֵּ֥ה אֶפְרָ֖יִם הוֹשֵׁ֥עַ בִּן־נֽוּן׃ לְמַטֵּ֣ה בִנְיָמִ֔ן פַּלְטִ֖י בֶּן־רָפֽוּא׃ לְמַטֵּ֣ה זְבוּלֻ֔ן גַּדִּיאֵ֖ל בֶּן־סוֹדִֽי׃ לְמַטֵּ֥ה יוֹסֵ֖ף לְמַטֵּ֣ה מְנַשֶּׁ֑ה גַּדִּ֖י בֶּן־סוּסִֽי׃ לְמַטֵּ֣ה דָ֔ן עַמִּיאֵ֖ל בֶּן־גְּמַלִּֽי׃ לְמַטֵּ֣ה אָשֵׁ֔ר סְת֖וּר בֶּן־מִיכָאֵֽל׃ לְמַטֵּ֣ה נַפְתָּלִ֔י נַחְבִּ֖י בֶּן־וָפְסִֽי׃ לְמַטֵּ֣ה גָ֔ד גְּאוּאֵ֖ל בֶּן־מָכִֽי׃</div>
+    <div class="mikra-line-2">וְאֵ֖לֶּה שְׁמוֹתָ֑ם לְמַטֵּ֣ה רְאוּבֵ֔ן שַׁמּ֖וּעַ בֶּן־זַכּֽוּר׃ לְמַטֵּ֣ה שִׁמְע֔וֹן שָׁפָ֖ט בֶּן־חוֹרִֽי׃ לְמַטֵּ֣ה יְהוּדָ֔ה כָּלֵ֖ב בֶּן־יְפֻנֶּֽה׃ לְמַטֵּ֣ה יִשָּׂשכָ֔ר יִגְאָ֖ל בֶּן־יוֹסֵֽף׃ לְמַטֵּ֥ה אֶפְרָ֖יִם הוֹשֵׁ֥עַ בִּן־נֽוּן׃ לְמַטֵּ֣ה בִנְיָמִ֔ן פַּלְטִ֖י בֶּן־רָפֽוּא׃</div>
+    <div class="targum-line">וְאִלֵּין שְׁמָהַתְהוֹן לְשִׁבְטָא דִרְאוּבֵן שַׁמּוּעַ בַּר זַכּוּר: לְשִׁבְטָא דְשִׁמְעוֹן שָׁפָט בַּר חוֹרִי: לְשִׁבְטָא דִיהוּדָה כָּלֵב בַּר יְפֻנֶּה:</div>
+  </div><div class="divider"></div>
+
+  <div class="pasuk">
+    <span class="pasuk-num">ט״ז–כ׳</span>
+    <div class="mikra-line">אֵ֚לֶּה שְׁמ֣וֹת הָֽאֲנָשִׁ֔ים אֲשֶׁר־שָׁלַ֥ח מֹשֶׁ֖ה לָת֣וּר אֶת־הָאָ֑רֶץ וַיִּקְרָ֥א מֹשֶׁ֛ה לְהוֹשֵׁ֥עַ בִּן־נ֖וּן יְהוֹשֻֽׁעַ׃</div>
+    <div class="mikra-line-2">אֵ֚לֶּה שְׁמ֣וֹת הָֽאֲנָשִׁ֔ים אֲשֶׁר־שָׁלַ֥ח מֹשֶׁ֖ה לָת֣וּר אֶת־הָאָ֑רֶץ וַיִּקְרָ֥א מֹשֶׁ֛ה לְהוֹשֵׁ֥עַ בִּן־נ֖וּן יְהוֹשֻֽׁעַ׃</div>
+    <div class="targum-line">אִלֵּין שְׁמָהַת גֻּבְרַיָּא דִּי שְׁלַח משֶׁה לְאַלָּלָא יָת אַרְעָא וּקְרָא משֶׁה לְהוֹשֵׁעַ בַּר נוּן יְהוֹשֻׁעַ:</div>
+  </div>
+</div>
+
+<!-- SHENI -->
+<div class="aliya-section" id="aliya-2">
+  <div class="aliya-header">
+    <div class="aliya-badge">ב</div>
+    <div class="aliya-title">שני — במדבר י״ג כ״א–ל״ג</div>
+  </div>
+  <div class="pasuk">
+    <span class="pasuk-num">כ״א</span>
+    <div class="mikra-line">וַֽיַּעֲל֖וּ וַיָּתֻ֣רוּ אֶת־הָאָ֑רֶץ מִמִּדְבַּר־צִ֥ן עַד־רְחֹ֖ב לְבֹ֥א חֲמָֽת׃</div>
+    <div class="mikra-line-2">וַֽיַּעֲל֖וּ וַיָּתֻ֣רוּ אֶת־הָאָ֑רֶץ מִמִּדְבַּר־צִ֥ן עַד־רְחֹ֖ב לְבֹ֥א חֲמָֽת׃</div>
+    <div class="targum-line">וּסְלִיקוּ וְאַלִּילוּ יָת אַרְעָא מִמַּדבְּרָא דְצִין עַד רְחוֹב לִמְטֵי חֲמָת:</div>
+  </div><div class="divider"></div>
+  <div class="pasuk">
+    <span class="pasuk-num">כ״ב–כ״ד</span>
+    <div class="mikra-line">וַיַּעֲל֣וּ בַנֶּגֶב֮ וַיָּבֹ֣א עַד־חֶבְרוֹן֒ וְשָׁ֤ם אֲחִימַן֙ שֵׁשַׁ֣י וְתַלְמַ֔י יְלִידֵ֖י הָעֲנָ֑ק וְחֶבְר֗וֹן שֶׁ֤בַע שָׁנִים֙ נִבְנְתָ֔ה לִפְנֵ֖י צֹ֥עַן מִצְרָֽיִם׃</div>
+    <div class="mikra-line-2">וַיַּעֲל֣וּ בַנֶּגֶב֮ וַיָּבֹ֣א עַד־חֶבְרוֹן֒ וְשָׁ֤ם אֲחִימַן֙ שֵׁשַׁ֣י וְתַלְמַ֔י יְלִידֵ֖י הָעֲנָ֑ק וְחֶבְר֗וֹן שֶׁ֤בַע שָׁנִים֙ נִבְנְתָ֔ה לִפְנֵ֖י צֹ֥עַן מִצְרָֽיִם׃</div>
+    <div class="targum-line">וּסְלִיקוּ בִדְרוֹמָא וַאֲתָא עַד חֶבְרוֹן וְתַמָּן אֲחִימָן שֵׁשַׁי וְתַלְמַי בְּנֵי גִּבָּרַיָּא וְחֶבְרוֹן שְׁבַע שְׁנִין אִתְבְּנִיאַת קֳדָם טָנַס דְּמִצְרָיִם:</div>
+  </div><div class="divider"></div>
+  <div class="pasuk">
+    <span class="pasuk-num">כ״ה–ל״ג</span>
+    <div class="mikra-line">וַיָּשֻׁ֖בוּ מִתּ֣וּר הָאָ֑רֶץ מִקֵּ֖ץ אַרְבָּעִ֥ים יֽוֹם׃ וַיֵּלְכ֡וּ וַיָּבֹאוּ֩ אֶל־מֹשֶׁ֨ה וְאֶֽל־אַהֲרֹ֜ן... וַיְסַפְּרוּ־לוֹ֙ וַיֹּ֣אמְר֔וּ בָּ֕אנוּ אֶל־הָאָ֖רֶץ אֲשֶׁ֣ר שְׁלַחְתָּ֑נוּ וְ֠גַם זָבַ֨ת חָלָ֥ב וּדְבַ֛שׁ הִ֖וא וְזֶה־פִּרְיָֽהּ׃</div>
+    <div class="mikra-line-2">וַיָּשֻׁ֖בוּ מִתּ֣וּר הָאָ֑רֶץ מִקֵּ֖ץ אַרְבָּעִ֥ים יֽוֹם׃</div>
+    <div class="targum-line">וְתָבוּ מִלְּאַלָּלָא יָת אַרְעָא מִסּוֹף אַרְבְּעִין יוֹמִין:</div>
+  </div>
+</div>
+
+<!-- SHLISHI -->
+<div class="aliya-section" id="aliya-3">
+  <div class="aliya-header">
+    <div class="aliya-badge">ג</div>
+    <div class="aliya-title">שלישי — במדבר י״ד א׳–כ״ה</div>
+  </div>
+  <div class="pasuk">
+    <span class="pasuk-num">א–ה</span>
+    <div class="mikra-line">וַתִּשָּׂא֙ כָּל־הָ֣עֵדָ֔ה וַֽיִּתְּנ֖וּ אֶת־קוֹלָ֑ם וַיִּבְכּ֥וּ הָעָ֖ם בַּלַּ֥יְלָה הַהֽוּא׃ וַיִּלֹּ֙נוּ֙ עַל־מֹשֶׁ֣ה וְעַֽל־אַהֲרֹ֔ן כֹּ֖ל בְּנֵ֣י יִשְׂרָאֵ֑ל...</div>
+    <div class="mikra-line-2">וַתִּשָּׂא֙ כָּל־הָ֣עֵדָ֔ה וַֽיִּתְּנ֖וּ אֶת־קוֹלָ֑ם וַיִּבְכּ֥וּ הָעָ֖ם בַּלַּ֥יְלָה הַהֽוּא׃</div>
+    <div class="targum-line">וַאֲרִימַת כָּל כְּנִשְׁתָּא וִיהָבוּ יָת קָלְהוֹן וּבְכוֹ עַמָּא בְּלֵילְיָא הַהוּא:</div>
+  </div><div class="divider"></div>
+  <div class="pasuk">
+    <span class="pasuk-num">ו–י</span>
+    <div class="mikra-line">וִיהוֹשֻׁ֣עַ בִּן־נ֗וּן וְכָלֵב֙ בֶּן־יְפֻנֶּ֔ה מִן־הַתָּרִ֖ים אֶת־הָאָ֑רֶץ קָרְע֖וּ בִּגְדֵיהֶֽם׃ וַיֹּ֣אמְר֔וּ אֶל־כָּל־עֲדַ֥ת בְּנֵֽי־יִשְׂרָאֵ֖ל לֵאמֹ֑ר הָאָ֗רֶץ אֲשֶׁ֨ר עָבַ֤רְנוּ בָהּ֙ לָת֣וּר אֹתָ֔הּ טוֹבָ֥ה הָאָ֖רֶץ מְאֹ֥ד מְאֹֽד׃</div>
+    <div class="mikra-line-2">וִיהוֹשֻׁ֣עַ בִּן־נ֗וּן וְכָלֵב֙ בֶּן־יְפֻנֶּ֔ה מִן־הַתָּרִ֖ים אֶת־הָאָ֑רֶץ קָרְע֖וּ בִּגְדֵיהֶֽם׃</div>
+    <div class="targum-line">וִיהוֹשֻׁעַ בַּר נוּן וְכָלֵב בַּר יְפֻנֶּה מִן מְאַלֲּלֵי יָת אַרְעָא בְּזָעוּ לְבוּשֵׁיהוֹן:</div>
+  </div><div class="divider"></div>
+  <div class="pasuk">
+    <span class="pasuk-num">ח–כ״ה</span>
+    <div class="mikra-line">אִם־חָפֵ֥ץ בָּ֙נוּ֙ יְהוָ֔ה וְהֵבִ֤יא אֹתָ֙נוּ֙ אֶל־הָאָ֣רֶץ הַזֹּ֔את וּנְתָנָ֖הּ לָ֑נוּ אֶ֕רֶץ אֲשֶׁר־הִ֛וא זָבַ֥ת חָלָ֖ב וּדְבָֽשׁ׃ אַ֣ךְ בַּֽיהוָה֮ אַל־תִּמְרֹדוּ֒ וְאַתֶּ֗ם אַל־תִּֽירְאוּ֙ אֶת־עַ֣ם הָאָ֔רֶץ כִּ֥י לַחְמֵ֖נוּ הֵ֑ם...</div>
+    <div class="mikra-line-2">אִם־חָפֵ֥ץ בָּ֙נוּ֙ יְהוָ֔ה וְהֵבִ֤יא אֹתָ֙נוּ֙ אֶל־הָאָ֣רֶץ הַזֹּ֔את...</div>
+    <div class="targum-line">אִם רַעֲוָא בָנָא קֳדָם יְיָ וְיָעֵל יָתָנָא לְאַרְעָא הָדָא...</div>
+  </div>
+</div>
+
+<!-- REVI'I -->
+<div class="aliya-section" id="aliya-4">
+  <div class="aliya-header">
+    <div class="aliya-badge">ד</div>
+    <div class="aliya-title">רביעי — במדבר י״ד כ״ו–ל״ח</div>
+  </div>
+  <div class="pasuk">
+    <span class="pasuk-num">כ״ו–ל״ה</span>
+    <div class="mikra-line">וַיְדַבֵּ֣ר יְהוָ֔ה אֶל־מֹשֶׁ֥ה וְאֶֽל־אַהֲרֹ֖ן לֵאמֹֽר׃ עַד־מָתַ֗י לָעֵדָ֤ה הָֽרָעָה֙ הַזֹּ֔את אֲשֶׁ֛ר הֵ֥מָּה מַלִּינִ֖ים עָלָ֑י... בַּמִּדְבָּ֣ר הַ֠זֶּה יִפְּל֨וּ פִגְרֵיכֶ֜ם...</div>
+    <div class="mikra-line-2">וַיְדַבֵּ֣ר יְהוָ֔ה אֶל־מֹשֶׁ֥ה וְאֶֽל־אַהֲרֹ֖ן לֵאמֹֽר׃</div>
+    <div class="targum-line">וּמַלִּיל יְיָ עִם משֶׁה וְעִם אַהֲרֹן לְמֵימַר:</div>
+  </div><div class="divider"></div>
+  <div class="pasuk">
+    <span class="pasuk-num">ל״ו–ל״ח</span>
+    <div class="mikra-line">וְהָ֣אֲנָשִׁ֔ים אֲשֶׁר־שָׁלַ֥ח מֹשֶׁ֖ה לָת֣וּר אֶת־הָאָ֑רֶץ וַיָּמֻ֙תוּ֙ הָֽאֲנָשִׁ֔ים מוֹצִאֵ֥י דִבַּת־הָאָ֖רֶץ רָעָ֑ה בַּמַּגֵּפָ֖ה לִפְנֵ֥י יְהוָֽה׃ וִיהוֹשֻׁ֣עַ בִּן־נ֔וּן וְכָלֵ֖ב בֶּן־יְפֻנֶּ֑ה חָיוּ֙ מִן־הָאֲנָשִׁ֣ים הָהֵ֔ם הַֽהֹלְכִ֖ים לָת֥וּר אֶת־הָאָֽרֶץ׃</div>
+    <div class="mikra-line-2">וַיָּמֻ֙תוּ֙ הָֽאֲנָשִׁ֔ים מוֹצִאֵ֥י דִבַּת־הָאָ֖רֶץ רָעָ֑ה בַּמַּגֵּפָ֖ה לִפְנֵ֥י יְהוָֽה׃</div>
+    <div class="targum-line">וּמִיתוּ גֻּבְרַיָּא דְּאַפִּיקוּ שׁוּם בִּישׁ עַל אַרְעָא בְּמוֹתָנָא קֳדָם יְיָ:</div>
+  </div>
+</div>
+
+<!-- CHAMISHI -->
+<div class="aliya-section" id="aliya-5">
+  <div class="aliya-header">
+    <div class="aliya-badge">ה</div>
+    <div class="aliya-title">חמישי — במדבר י״ד ל״ט — ט״ו כ״ד</div>
+  </div>
+  <div class="pasuk">
+    <span class="pasuk-num">ל״ט–מ״ה</span>
+    <div class="mikra-line">וַיְדַבֵּ֣ר מֹשֶׁ֔ה אֶת־הַדְּבָרִ֖ים הָאֵ֑לֶּה אֶל־כָּל־בְּנֵ֣י יִשְׂרָאֵ֔ל וַיִּתְאַבְּל֥וּ הָעָ֖ם מְאֹֽד׃... וַיַּעְפִּ֗לוּ לַעֲלוֹת֙ אֶל־רֹ֣אשׁ הָהָ֔ר וַאֲר֤וֹן בְּרִית־יְהוָה֙ וּמֹשֶׁ֔ה לֹא־מָ֖שׁוּ מִקֶּ֥רֶב הַֽמַּחֲנֶֽה׃</div>
+    <div class="mikra-line-2">וַיְדַבֵּ֣ר מֹשֶׁ֔ה אֶת־הַדְּבָרִ֖ים הָאֵ֑לֶּה אֶל־כָּל־בְּנֵ֣י יִשְׂרָאֵ֔ל...</div>
+    <div class="targum-line">וְמַלֵּיל משֶׁה יָת פִּתְגָמַיָּא הָאִלֵּין עִם כָּל בְּנֵי יִשְׂרָאֵל...</div>
+  </div>
+</div>
+
+<!-- SHISHI -->
+<div class="aliya-section" id="aliya-6">
+  <div class="aliya-header">
+    <div class="aliya-badge">ו</div>
+    <div class="aliya-title">ששי — במדבר ט״ו א׳–ט״ז</div>
+  </div>
+  <div class="pasuk">
+    <span class="pasuk-num">א–ג</span>
+    <div class="mikra-line">וַיְדַבֵּ֥ר יְהוָ֖ה אֶל־מֹשֶׁ֥ה לֵּאמֹֽר׃ דַּבֵּ֞ר אֶל־בְּנֵ֣י יִשְׂרָאֵ֗ל וְאָמַרְתָּ֤ אֲלֵהֶם֙ כִּ֣י תָבֹ֔אוּ אֶל־אֶ֣רֶץ מוֹשְׁבֹתֵיכֶ֔ם אֲשֶׁ֥ר אֲנִ֖י נֹתֵ֣ן לָכֶ֑ם׃</div>
+    <div class="mikra-line-2">וַיְדַבֵּ֥ר יְהוָ֖ה אֶל־מֹשֶׁ֥ה לֵּאמֹֽר׃ דַּבֵּ֞ר אֶל־בְּנֵ֣י יִשְׂרָאֵ֗ל...</div>
+    <div class="targum-line">וּמַלִּיל יְיָ עִם משֶׁה לְמֵימַר: מַלֵּיל עִם בְּנֵי יִשְׂרָאֵל וְתֵימַר לְהוֹן אֲרֵי תֵעֲלוּן לְאַרְעָא דְּמוֹתְּבֵיכוֹן דַּאֲנָא יָהֵב לְכוֹן:</div>
+  </div>
+</div>
+
+<!-- SHEVI'I -->
+<div class="aliya-section" id="aliya-7">
+  <div class="aliya-header">
+    <div class="aliya-badge">ז</div>
+    <div class="aliya-title">שביעי — במדבר ט״ו י״ז–מ״א</div>
+  </div>
+  <div class="pasuk">
+    <span class="pasuk-num">ל״ז–מ״א</span>
+    <div class="mikra-line">וַיֹּ֥אמֶר יְהוָ֖ה אֶל־מֹשֶׁ֥ה לֵּאמֹֽר׃ דַּבֵּר֙ אֶל־בְּנֵ֣י יִשְׂרָאֵ֔ל וְאָמַרְתָּ֣ אֲלֵהֶ֔ם וְעָשׂ֨וּ לָהֶ֥ם צִיצִ֛ת עַל־כַּנְפֵ֥י בִגְדֵיהֶ֖ם לְדֹרֹתָ֑ם... אֲנִ֞י יְהוָ֣ה אֱלֹהֵיכֶ֗ם אֲשֶׁ֨ר הוֹצֵ֤אתִי אֶתְכֶם֙ מֵאֶ֣רֶץ מִצְרַ֔יִם לִהְי֥וֹת לָכֶ֖ם לֵאלֹהִ֑ים אֲנִ֖י יְהוָ֥ה אֱלֹהֵיכֶֽם׃</div>
+    <div class="mikra-line-2">וַיֹּ֥אמֶר יְהוָ֖ה אֶל־מֹשֶׁ֥ה לֵּאמֹֽר׃ דַּבֵּר֙ אֶל־בְּנֵ֣י יִשְׂרָאֵ֔ל וְעָשׂ֨וּ לָהֶ֥ם צִיצִ֛ת...</div>
+    <div class="targum-line">וַאֲמַר יְיָ לְמשֶׁה לְמֵימַר: מַלֵּיל עִם בְּנֵי יִשְׂרָאֵל וְתֵימַר לְהוֹן וְיַעְבְּדוּן לְהוֹן צִיצִית...</div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="toast" id="toast">המיקום נשמר ✓</div>
+
+<audio id="audioEl" preload="none"></audio>
+
+<script>
+const AUDIO_BASE_URLS = [
+  'https://kolavrohom.com/0-shnayim-mikra/shelach/',
+  'https://kolavrohom.com/0-shnayim-mikra/37-Shelach/',
+  'https://kolavrohom.com/0-shnayim-mikra/Shelach/',
+];
+
+const ALIYA_NAMES = ['ראשון','שני','שלישי','רביעי','חמישי','ששי','שביעי'];
+
+let currentAliya = 1;
+let isPlaying = false;
+let audioBaseUrl = AUDIO_BASE_URLS[0];
+let savedPositions = {};
+
+// Load saved state from localStorage
+try {
+  const saved = localStorage.getItem('shnayimMikraShelach');
+  if (saved) {
+    const data = JSON.parse(saved);
+    savedPositions = data.positions || {};
+  }
+} catch(e) {}
+
+const audio = document.getElementById('audioEl');
+const playBtn = document.getElementById('playBtn');
+const progressFill = document.getElementById('progressFill');
+const currentTimeEl = document.getElementById('currentTime');
+const totalTimeEl = document.getElementById('totalTime');
+const playerLabel = document.getElementById('playerLabel');
+const audioStatus = document.getElementById('audioStatus');
+
+function selectAliya(n) {
+  // Save current position
+  if (currentAliya && audio.currentTime > 1) {
+    savedPositions[currentAliya] = audio.currentTime;
+    saveState();
+  }
+
+  // Pause current
+  audio.pause();
+  isPlaying = false;
+  updatePlayIcon();
+
+  currentAliya = n;
+
+  // Update nav
+  document.querySelectorAll('.aliya-btn').forEach((b,i) => {
+    b.classList.toggle('active', i+1 === n);
+  });
+
+  // Show section
+  document.querySelectorAll('.aliya-section').forEach((s,i) => {
+    s.classList.toggle('active', i+1 === n);
+  });
+
+  // Update player label
+  playerLabel.textContent = ALIYA_NAMES[n-1] + ' — לחץ ▶ להפעלה';
+
+  // Load audio
+  const url = audioBaseUrl + n + '.mp3';
+  audio.src = url;
+  audio.load();
+
+  // Restore position if saved
+  audio.addEventListener('loadedmetadata', function onMeta() {
+    if (savedPositions[n]) {
+      audio.currentTime = savedPositions[n];
+    }
+    audio.removeEventListener('loadedmetadata', onMeta);
+  }, {once: true});
+
+  audioStatus.textContent = 'טוען... לחץ ▶';
+  progressFill.style.width = '0%';
+  currentTimeEl.textContent = '0:00';
+  totalTimeEl.textContent = '--:--';
+
+  // Scroll section into view
+  document.getElementById('aliya-' + n).scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function togglePlay() {
+  if (!audio.src || audio.src === window.location.href) {
+    selectAliya(currentAliya);
+    setTimeout(() => audio.play().catch(handleAudioError), 300);
+    return;
+  }
+  if (isPlaying) {
+    audio.pause();
+  } else {
+    audio.play().catch(handleAudioError);
+  }
+}
+
+function handleAudioError(e) {
+  audioStatus.textContent = '⚠ שגיאה בטעינת האודיו — נסה URL אחר';
+  console.error('Audio error:', e, audio.src);
+}
+
+function updatePlayIcon() {
+  playBtn.innerHTML = isPlaying
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="#1A1209"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="#1A1209"><path d="M8 5v14l11-7z"/></svg>';
+}
+
+function formatTime(s) {
+  if (isNaN(s)) return '--:--';
+  const m = Math.floor(s/60);
+  const sec = Math.floor(s%60);
+  return m + ':' + String(sec).padStart(2,'0');
+}
+
+audio.addEventListener('play', () => { isPlaying = true; updatePlayIcon(); audioStatus.textContent = '▶ מנגן'; });
+audio.addEventListener('pause', () => { isPlaying = false; updatePlayIcon(); audioStatus.textContent = '⏸ מושהה'; });
+audio.addEventListener('ended', () => {
+  isPlaying = false;
+  updatePlayIcon();
+  audioStatus.textContent = '✓ סיום';
+  savedPositions[currentAliya] = 0;
+  saveState();
+  // Auto-advance
+  if (currentAliya < 7) {
+    setTimeout(() => {
+      selectAliya(currentAliya + 1);
+      setTimeout(() => audio.play().catch(handleAudioError), 500);
+    }, 1500);
+  }
+});
+
+audio.addEventListener('timeupdate', () => {
+  const pct = audio.duration ? (audio.currentTime / audio.duration * 100) : 0;
+  progressFill.style.width = pct + '%';
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+  // Save every 5 seconds
+  if (Math.floor(audio.currentTime) % 5 === 0 && audio.currentTime > 1) {
+    savedPositions[currentAliya] = audio.currentTime;
+    saveState();
+  }
+});
+
+audio.addEventListener('loadedmetadata', () => {
+  totalTimeEl.textContent = formatTime(audio.duration);
+  audioStatus.textContent = 'מוכן להפעלה';
+});
+
+audio.addEventListener('error', () => {
+  audioStatus.textContent = '⚠ לא נמצא קובץ האודיו';
+});
+
+function seekAudio(e) {
+  if (!audio.duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const ratio = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = ratio * audio.duration;
+}
+
+function setSpeed(s) {
+  audio.playbackRate = s;
+  document.querySelectorAll('.speed-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.textContent) === s);
+  });
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('shnayimMikraShelach', JSON.stringify({positions: savedPositions}));
+  } catch(e) {}
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight') audio.currentTime = Math.max(0, audio.currentTime - 10);
+  if (e.code === 'ArrowLeft') audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
+});
+
+// Init
+selectAliya(1);
+</script>
+</body>
+</html>
