@@ -86,19 +86,35 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
+function showAudioSourceFallback() {
+  audioStatus.textContent = '⚠ לא נמצא קובץ אודיו ישיר. אפשר לפתוח את ';
+  const link = document.createElement('a');
+  link.href = AUDIO_SOURCE_PAGE;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = 'מקור ההקלטות';
+  audioStatus.appendChild(link);
+}
+
 // ── Audio URL fallback ────────────────────────────────────────────────────────
 function buildAudioUrl(aliya, attemptIndex = audioAttemptIndex) {
-  return AUDIO_URL_BUILDERS[attemptIndex](aliya);
+  const builder = AUDIO_URL_BUILDERS[attemptIndex];
+  return builder ? builder(aliya) : null;
 }
 
 function tryNextUrl(aliya) {
   if (audioAttemptIndex < AUDIO_URL_BUILDERS.length - 1) {
     audioAttemptIndex++;
-    audio.src = buildAudioUrl(aliya);
+    const nextUrl = buildAudioUrl(aliya);
+    if (!nextUrl) {
+      showAudioSourceFallback();
+      return;
+    }
+    audio.src = nextUrl;
     audio.load();
     audioStatus.textContent = 'מנסה כתובת אודיו אחרת…';
   } else {
-    audioStatus.innerHTML = `⚠ לא נמצא קובץ אודיו ישיר. אפשר לפתוח את <a href="${AUDIO_SOURCE_PAGE}" target="_blank" rel="noopener noreferrer">מקור ההקלטות</a>`;
+    showAudioSourceFallback();
   }
 }
 
@@ -135,7 +151,12 @@ function selectAliya(n) {
   totalTimeEl.textContent = '--:--';
   audioStatus.textContent = 'טוען…';
 
-  audio.src = buildAudioUrl(n);
+  const initialUrl = buildAudioUrl(n);
+  if (!initialUrl) {
+    showAudioSourceFallback();
+    return;
+  }
+  audio.src = initialUrl;
   audio.load();
 
   // Restore saved position after metadata is ready
