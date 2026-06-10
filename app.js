@@ -233,7 +233,7 @@ document.addEventListener('keydown', e => {
       e.preventDefault();
       togglePlay();
       break;
-    // RTL: ArrowRight = forward in time, ArrowLeft = rewind
+    // Standard media-player convention: right = skip forward, left = rewind
     case 'ArrowRight':
       audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
       break;
