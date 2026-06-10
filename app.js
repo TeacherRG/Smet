@@ -3,11 +3,20 @@
  * Audio player + aliya navigation
  */
 
-// Candidate base URLs tried in order until one succeeds
-const AUDIO_BASE_URLS = [
-  'https://kolavrohom.com/0-shnayim-mikra/37-Shelach/',
-  'https://kolavrohom.com/0-shnayim-mikra/shelach/',
-  'https://kolavrohom.com/0-shnayim-mikra/Shelach/',
+// Candidate audio URLs derived from the Kol Avrohom source page
+const AUDIO_SOURCE_PAGE = 'https://kolavrohom.com/0-shnayim-mikra/37-Shelach.html';
+const AUDIO_ENGLISH_NAMES = ['Rishon', 'Sheini', 'Shlishi', 'Revii', 'Chamishi', 'Shishi', 'Shevii'];
+const AUDIO_URL_BUILDERS = [
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach/${aliya}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach/${String(aliya).padStart(2, '0')}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach-${aliya}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach-${String(aliya).padStart(2, '0')}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach/${AUDIO_ENGLISH_NAMES[aliya - 1]}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach/${AUDIO_ENGLISH_NAMES[aliya - 1].toLowerCase()}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach-${AUDIO_ENGLISH_NAMES[aliya - 1]}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/37-Shelach-${AUDIO_ENGLISH_NAMES[aliya - 1].toLowerCase()}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/${AUDIO_ENGLISH_NAMES[aliya - 1]}.mp3`,
+  aliya => `https://kolavrohom.com/0-shnayim-mikra/${AUDIO_ENGLISH_NAMES[aliya - 1].toLowerCase()}.mp3`,
 ];
 
 const ALIYA_NAMES = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'ששי', 'שביעי'];
@@ -17,7 +26,7 @@ const SAVE_INTERVAL_MS = 5000;
 
 let currentAliya = 1;
 let isPlaying = false;
-let urlIndex = 0;       // index into AUDIO_BASE_URLS currently in use
+let audioAttemptIndex = 0;
 let savedPositions = {};
 let saveTimer = null;
 
@@ -27,7 +36,6 @@ try {
   if (raw) {
     const data = JSON.parse(raw);
     savedPositions = data.positions || {};
-    if (typeof data.urlIndex === 'number') urlIndex = data.urlIndex;
   }
 } catch (_) {}
 
@@ -51,7 +59,7 @@ function formatTime(s) {
 
 function saveState() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ positions: savedPositions, urlIndex }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ positions: savedPositions }));
   } catch (_) {}
 }
 
@@ -79,19 +87,18 @@ function showToast(msg) {
 }
 
 // ── Audio URL fallback ────────────────────────────────────────────────────────
-function buildAudioUrl(aliya) {
-  return AUDIO_BASE_URLS[urlIndex] + aliya + '.mp3';
+function buildAudioUrl(aliya, attemptIndex = audioAttemptIndex) {
+  return AUDIO_URL_BUILDERS[attemptIndex](aliya);
 }
 
 function tryNextUrl(aliya) {
-  if (urlIndex < AUDIO_BASE_URLS.length - 1) {
-    urlIndex++;
-    saveState();
+  if (audioAttemptIndex < AUDIO_URL_BUILDERS.length - 1) {
+    audioAttemptIndex++;
     audio.src = buildAudioUrl(aliya);
     audio.load();
-    audioStatus.textContent = 'מנסה כתובת אחרת…';
+    audioStatus.textContent = 'מנסה כתובת אודיו אחרת…';
   } else {
-    audioStatus.textContent = '⚠ לא נמצא קובץ האודיו';
+    audioStatus.innerHTML = `⚠ לא נמצא קובץ אודיו ישיר. אפשר לפתוח את <a href="${AUDIO_SOURCE_PAGE}" target="_blank" rel="noopener noreferrer">מקור ההקלטות</a>`;
   }
 }
 
@@ -110,6 +117,7 @@ function selectAliya(n) {
   saveTimer = null;
 
   currentAliya = n;
+  audioAttemptIndex = 0;
 
   // Update nav buttons
   document.querySelectorAll('.aliya-btn').forEach((btn, i) => {
@@ -160,7 +168,7 @@ function togglePlay() {
 
 function handleAudioError(err) {
   console.error('Audio error:', err, audio.src);
-  audioStatus.textContent = '⚠ שגיאה — מנסה כתובת אחרת…';
+  audioStatus.textContent = '⚠ שגיאה — מנסה כתובת אודיו אחרת…';
   tryNextUrl(currentAliya);
 }
 

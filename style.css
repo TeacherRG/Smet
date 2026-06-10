@@ -194,6 +194,17 @@ body {
   margin-top: 4px;
 }
 
+.audio-source {
+  text-align: center;
+  margin-top: 6px;
+  font-size: 0.78rem;
+}
+
+.audio-source a,
+.audio-status a {
+  color: var(--gold-light);
+}
+
 /* CONTENT */
 .content {
   max-width: 780px;
