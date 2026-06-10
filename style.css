@@ -1,0 +1,345 @@
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Noto+Serif+Hebrew:wght@300;400;600&display=swap');
+
+:root {
+  --parchment: #F5EED8;
+  --parchment-dark: #EDE0C0;
+  --ink: #1A1209;
+  --ink-mid: #3D2B0E;
+  --gold: #B8862C;
+  --gold-light: #D4A84B;
+  --crimson: #8B1A1A;
+  --shadow: rgba(26,18,9,0.15);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #2A1F0E;
+  background-image: radial-gradient(ellipse at top, #3A2A12 0%, #1A1209 100%);
+  min-height: 100vh;
+  font-family: 'Noto Serif Hebrew', 'Frank Ruhl Libre', serif;
+  color: var(--ink);
+}
+
+/* HEADER */
+.site-header {
+  background: linear-gradient(135deg, #1A1209 0%, #2E1F0A 50%, #1A1209 100%);
+  border-bottom: 2px solid var(--gold);
+  padding: 16px 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.site-header h1 {
+  color: var(--gold-light);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+.site-header .subtitle {
+  color: #C9A96E;
+  font-size: 0.85rem;
+  margin-top: 2px;
+  font-weight: 300;
+}
+
+/* ALIYA NAV */
+.aliya-nav {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: #1A1209;
+  border-bottom: 1px solid #3A2A12;
+}
+
+.aliya-btn {
+  background: transparent;
+  border: 1px solid #5A4020;
+  color: #C9A96E;
+  padding: 5px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.aliya-btn:hover {
+  background: #2E1F0A;
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+.aliya-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1A1209;
+  font-weight: 600;
+}
+
+/* AUDIO PLAYER */
+.player-bar {
+  background: linear-gradient(180deg, #221608 0%, #1A1209 100%);
+  border-bottom: 1px solid #3A2A12;
+  padding: 10px 16px;
+  position: sticky;
+  top: 80px;
+  z-index: 90;
+}
+
+.player-aliya-label {
+  color: var(--gold-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.play-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.play-btn:hover { background: var(--gold-light); transform: scale(1.05); }
+.play-btn:active { transform: scale(0.95); }
+
+.play-btn svg { fill: #1A1209; }
+
+.progress-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: #3A2A12;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  color: #8A7050;
+  font-size: 0.72rem;
+  font-family: monospace;
+  direction: ltr;
+}
+
+.speed-btns {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.speed-btn {
+  background: transparent;
+  border: 1px solid #5A4020;
+  color: #8A7050;
+  padding: 3px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-family: monospace;
+  direction: ltr;
+  transition: all 0.2s;
+}
+
+.speed-btn.active, .speed-btn:hover {
+  background: #3A2A12;
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+.audio-status {
+  text-align: center;
+  color: #6A5030;
+  font-size: 0.78rem;
+  margin-top: 4px;
+}
+
+/* CONTENT */
+.content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+.aliya-section {
+  display: none;
+  background: var(--parchment);
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px var(--shadow);
+  border: 1px solid var(--parchment-dark);
+  position: relative;
+}
+
+.aliya-section.active { display: block; }
+
+.aliya-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--parchment-dark);
+}
+
+.aliya-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--crimson);
+  color: #F5EED8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.aliya-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink-mid);
+}
+
+/* PASUK */
+.pasuk {
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  border-right: 3px solid transparent;
+  border-radius: 3px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.pasuk:hover {
+  background: rgba(184,134,44,0.06);
+  border-right-color: var(--gold-light);
+}
+
+.pasuk-num {
+  display: inline-block;
+  width: 28px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--crimson);
+  font-weight: 600;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.mikra-line {
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.mikra-line-2 {
+  font-size: 1.0rem;
+  line-height: 1.8;
+  color: #3A2B10;
+  margin-bottom: 4px;
+  padding-right: 12px;
+}
+
+.targum-line {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #5C4420;
+  padding-right: 12px;
+  font-style: italic;
+}
+
+.divider {
+  height: 1px;
+  background: var(--parchment-dark);
+  margin: 14px 0;
+}
+
+/* Badges for aliyot colors */
+.aliya-section:nth-child(1) .aliya-badge { background: #8B1A1A; }
+.aliya-section:nth-child(2) .aliya-badge { background: #1A5C8B; }
+.aliya-section:nth-child(3) .aliya-badge { background: #1A7A3A; }
+.aliya-section:nth-child(4) .aliya-badge { background: #6B2D8B; }
+.aliya-section:nth-child(5) .aliya-badge { background: #8B5E1A; }
+.aliya-section:nth-child(6) .aliya-badge { background: #1A6B6B; }
+.aliya-section:nth-child(7) .aliya-badge { background: #4A1A8B; }
+
+/* Saved position toast */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: #2E1F0A;
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  transition: transform 0.3s;
+  z-index: 200;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Auto-play badge */
+.auto-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(26,122,58,0.15);
+  border: 1px solid rgba(26,122,58,0.4);
+  color: #1A7A3A;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+@media (max-width: 480px) {
+  .mikra-line { font-size: 1.05rem; }
+  .speed-btns { display: none; }
+}
