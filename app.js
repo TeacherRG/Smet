@@ -87,30 +87,25 @@ function showToast(msg) {
 }
 
 function showAudioSourceFallback() {
-  audioStatus.textContent = '⚠ לא נמצא קובץ אודיו ישיר. אפשר לפתוח את ';
   const link = document.createElement('a');
   link.href = AUDIO_SOURCE_PAGE;
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
+  link.setAttribute('aria-label', 'פתח את דף מקור ההקלטות בכל אברהם');
   link.textContent = 'מקור ההקלטות';
-  audioStatus.appendChild(link);
+  audioStatus.replaceChildren('⚠ לא נמצא קובץ אודיו ישיר. אפשר לפתוח את ', link);
 }
 
 // ── Audio URL fallback ────────────────────────────────────────────────────────
-function buildAudioUrl(aliya, attemptIndex = audioAttemptIndex) {
-  const builder = AUDIO_URL_BUILDERS[attemptIndex];
+function buildAudioUrl(aliya, attemptIndex) {
+  const builder = AUDIO_URL_BUILDERS[attemptIndex ?? audioAttemptIndex];
   return builder ? builder(aliya) : null;
 }
 
 function tryNextUrl(aliya) {
   if (audioAttemptIndex < AUDIO_URL_BUILDERS.length - 1) {
     audioAttemptIndex++;
-    const nextUrl = buildAudioUrl(aliya);
-    if (!nextUrl) {
-      showAudioSourceFallback();
-      return;
-    }
-    audio.src = nextUrl;
+    audio.src = buildAudioUrl(aliya, audioAttemptIndex);
     audio.load();
     audioStatus.textContent = 'מנסה כתובת אודיו אחרת…';
   } else {
